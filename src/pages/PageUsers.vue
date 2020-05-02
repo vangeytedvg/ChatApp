@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex q-pa-md">
     <q-list class="full-width" separator>
-      <q-item v-for="user in users" :key="user.id" clickable v-ripple>
+      <q-item v-for="user in users" :key="user.id" clickable v-ripple to="/chat">
         <q-item-section avatar>
           <q-avatar color="primary" text-color="white">{{ user.name.charAt(0) }}</q-avatar>
         </q-item-section>
@@ -11,6 +11,7 @@
         </q-item-section>
 
         <q-item-section side>
+          <!-- Depending on the state set the color of the button -->
           <q-badge :color="user.online ? 'light-green-5' : 'grey-4'">
             {{ user.online ? "Onine" : "Offline"}}
           </q-badge>
