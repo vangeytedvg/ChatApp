@@ -1,0 +1,46 @@
+{
+    "users": {
+        "USERID01": {
+            "name": "Danny",
+            "email": "vangeytedvg@gmail.com",
+            "on,line": true
+        },
+        "USERID02": {
+            "name": "Ronny",
+            "email": "vandercammenr@gmail.com",
+            "online": false
+        }
+        ,
+        "USERID03": {
+            "name": "Denka",
+            "email": "denkatech@zohomail.eu",
+            "online": true
+        }
+    },
+    "chats": {
+        "USERID1": {
+            "USERID02": {
+                "MESSAGEID01": {
+                    "text": "Hi how are you?",
+                    "from": "them"
+                },
+                "MESSAGEID02": {
+                    "text": "Great",
+                    "from": "me"
+                }
+            }
+        },
+        "USERID02": {
+            "USERID01": {
+                "MESSAGEID01": {
+                    "text": "Hi how are you?",
+                    "from": "me"
+                },
+                "MESSAGEID02": {
+                    "text": "Great",
+                    "from": "them"
+                }
+            }
+        }
+    }
+}

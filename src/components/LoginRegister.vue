@@ -27,14 +27,18 @@
 </template>
 
 <script>
+// Import actions
+import { mapActions } from 'vuex'
 export default {
   props: ["tab"],
   methods: {
+    // store is defined in store/index.js
+    ...mapActions("store", ['registerUser']),
     submitForm() {
         if (this.tab == 'login') {
             console.log('Login the user')
         } else {
-            console.log('Register the user')
+            this.registerUser(this.formData)
         }
 
     }
