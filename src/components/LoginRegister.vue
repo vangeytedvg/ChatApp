@@ -1,4 +1,4 @@
-<template>
+ <template>
   <q-form @submit="submitForm">
     <q-input
         v-if="tab=='register'"
@@ -33,14 +33,13 @@ export default {
   props: ["tab"],
   methods: {
     // store is defined in store/index.js
-    ...mapActions("store", ['registerUser']),
+    ...mapActions("store", ['registerUser', 'loginUser']),
     submitForm() {
         if (this.tab == 'login') {
-            console.log('Login the user')
+            this.loginUser(this.formData)
         } else {
             this.registerUser(this.formData)
         }
-
     }
   },
   data() {

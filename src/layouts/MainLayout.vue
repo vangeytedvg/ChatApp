@@ -11,7 +11,26 @@
           label="Back"
         />
         <q-toolbar-title class="absolute-center">{{ title }}</q-toolbar-title>
-        <q-btn to="/auth" class="absolute-right" q-pr-sm flat no-caps icon="account_circle" dense label="Login" />
+        <q-btn 
+          v-if="!userDetails.userId"
+          to="/auth" 
+          class="absolute-right" 
+          q-pr-sm 
+          flat 
+          no-caps icon="account_circle" 
+          dense 
+          label="Login" 
+        />
+        <q-btn 
+          v-else="userDetails.userId"
+          @click = "logoutUser"
+          to="/auth" 
+          class="absolute-right" 
+          q-pr-sm 
+          flat 
+          no-caps icon="account_circle" 
+          dense 
+          >Logout <br>{{ userDetails.name }}</q-btn>
       </q-toolbar>
     </q-header>
     <q-page-container>
@@ -21,15 +40,14 @@
 </template>
 
 <script>
-import EssentialLink from "components/EssentialLink";
-
+import { mapState, mapActions } from 'vuex'
 export default {
   name: "MainLayout",
 
   components: {
-    EssentialLink
   },
   computed: {
+    ...mapState('store', ['userDetails'] ),
     // This function returns the path were located at
     title() {
       let myPath = this.$route.fullPath;
@@ -41,6 +59,14 @@ export default {
         return "Auth";
       }
     }
+  },
+  methods: {
+    ...mapActions('store', ['logoutUser'])
   }
 };
 </script>
+<style lang="stylus">
+  .q-toolbar
+    .q-btn
+      line-height: 1.2
+</style>
