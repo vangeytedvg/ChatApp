@@ -41,9 +41,10 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-export default {
-  name: "MainLayout",
+import mixinOtherDetails from 'src/mixins/mixin-other-user-detail.js'
 
+export default {
+  mixins: [mixinOtherUserDetails],
   components: {
   },
   computed: {
@@ -53,8 +54,9 @@ export default {
       let myPath = this.$route.fullPath;
       if (myPath == "/") {
         return "Smack Chat Main";
-      } else if (myPath == "/chat") {
-        return "Chat";
+      } else if (myPath.includes("/chat")) {
+        // For setting the username on top of the form
+        return this.otherUserDetails.name;
       } else if (myPath == "/auth") {
         return "Auth";
       }

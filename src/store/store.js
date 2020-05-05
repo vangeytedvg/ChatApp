@@ -1,16 +1,36 @@
 // We need to import the variables declared in firebase.js
 import { firebaseAuth, firebaseDb } from "boot/firebase"
+import Vue from 'vue'
 import { boot } from "quasar/wrappers"
+
+let messageRef
 
 const state = {
     // Store user datails for the application
-    userDetails : {}
+    userDetails : {},
+    users: {},
+    // state that holds the message
+    messages: {}
 }
 
 const mutations = {
     // User details need a mutation
     setUserDetails(state, payload) {
         state.userDetails = payload
+    },
+    addUser(state, payload) {
+        // We need to use Vue here, otherwise we vue won't know about the data
+        Vue.set(state.users, payload.userId, payload.userDetails)
+    },
+    updateUser(state, payload) {
+        // Called from firebaseGetUsers for each user
+        Object.assign(state.users[payload.userId], payload.userDetails)
+    },
+    addMessage(state, payload) {
+        Vue.set(state.message, payload.messageId, payload.messageDetails)
+    },
+    clearMessages(state) {
+        state.messages = {}
     }
 }
 
@@ -79,7 +99,9 @@ const actions = {
                 // Get all the users in the database
                 dispatch('firebaseGetUsers')
                 // This is a response.redirect
-                this.$router.push('/')
+                this.$router.push('/').catch((err) => {
+                    console.log("Error snapped in router push (store.js)")
+                })
             })
         } else {  
             // LOGGED OUT 
@@ -105,16 +127,74 @@ const actions = {
         // setup a ref
         firebaseDb.ref('users/' + payload.userId).update(payload.updates)
     },
-    firebaseGetUsers() {
-        // get a ref to the database
+    firebaseGetUsers({ commit }) {
+        // get a ref to the database and then get the app users from the database
         firebaseDb.ref('users/').on('child_added', snapshot => {
+            // This code is executed when a new child node (json) is added from the users table
             let userDetails = snapshot.val()
-            console.log(userDetails)
+            // To get the user id we need to go back to the snapshot itself.  Because,
+            // snapshot.val only has the fields belonging to it.
+            let userId = snapshot.key
+            // create a mutation
+            commit('addUser', {
+                // Payload
+                userId,
+                userDetails
+            })
         })
+        firebaseDb.ref('users/').on('child_changed', snapshot => {
+            // This is where the magic happens, if firebase is updated (some logs in our out),
+            // this hook will be executed.
+            let userDetails = snapshot.val()
+            // To get the user id we need to go back to the snapshot itself.  Because,
+            // snapshot.val only has the fields belonging to it.
+            let userId = snapshot.key
+            // create a mutation
+            commit('updateUser', {
+                // Payload
+                userId,
+                userDetails
+            })
+        })
+    },
+    firebaseGetMessages({ commit, state }, otherUserId) {
+        let userId = state.userDetails.userId
+        messageRef = firebaseDb.ref('chat/' + userId + '/' + otherUserId)
+        messageRef.on('child_added', snapshot => {
+            let messageDetails = snapshot.val()
+            let messageId = snapshot.key
+            // Mutate
+            commit('addMessage', {
+                // Payload holding the messages
+                messageId,
+                messageDetails
+            })
+        })
+    },
+    firebaseStopGettingMessages( { commit }) {
+        // Must call this to stop the firebaseGetMessages hool
+        console.log('Leaving page')
+        if (messageRef) {
+            // turn off
+            messageRef.off('child_added')
+            commit('clearMessages')
+        }
     }
 }
 
 const getters = {
+    // This getter is needed to get our data in the users form
+    users: state => {
+        // Get all users, but exclude ourselves
+        let usersFiltered = {}
+        Object.keys(state.users).forEach(key => {
+            // Is this me?
+            if (key !== state.userDetails.userId) {
+                usersFiltered[key] = state.users[key]
+            }
+        })
+        return usersFiltered
+    }
 }
 
 export default {
