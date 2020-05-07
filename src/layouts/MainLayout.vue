@@ -5,8 +5,7 @@
         <q-btn
           v-if="$route.fullPath.includes('/chat')"
           v-go-back.single
-          icon="arrow_back"
-          flat
+          icon="arrow_back" flat
           no-caps=""
           label="Back"
         />
@@ -41,10 +40,10 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import mixinOtherDetails from 'src/mixins/mixin-other-user-detail.js'
+import otherUserDetails from 'src/mixins/mixin-other-user-detail.js'
 
 export default {
-  mixins: [mixinOtherUserDetails],
+  mixins: [otherUserDetails],
   components: {
   },
   computed: {
